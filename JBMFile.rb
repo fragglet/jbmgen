@@ -51,13 +51,13 @@ class JBMFile
         # add to album list 
         album_name = newfile.album
         album_name = "Unknown" if album_name == ""
-        album_list = @root_list.album_list.get_path(album_name)
+        album_list = @root_list.album_list.get_path([album_name])
         album_list.add(newfile)
 
         # add to artist list
         artist_name = newfile.artist
         artist_name = "Unknown" if artist_name == ""
-        artist_list = @root_list.artist_list.get_path("#{artist_name}/#{album_name}")
+        artist_list = @root_list.artist_list.get_path([artist_name, album_name])
         artist_list.add(newfile)
 
         # add to genre list
@@ -67,7 +67,7 @@ class JBMFile
         else
             Mp3Info::GENRES[genre]
         end
-        genre_list = @root_list.genre_list.get_path(genre_name)
+        genre_list = @root_list.genre_list.get_path([genre_name])
         genre_list.add(newfile)
         
         newfile
@@ -83,7 +83,7 @@ class JBMFile
         # generate 20 playlists
 
         20.times do |i|
-            path = @root_list.random_list.get_path("Random List #{i+1}")
+            path = @root_list.random_list.get_path(["Random List #{i+1}"])
             used_tracks = {}
 
             # add tracks
