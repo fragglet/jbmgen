@@ -116,6 +116,7 @@ class RandomNode < TreeNode
     end
 
     def children
+        # dont sort child nodes
         @children
     end
 end
@@ -131,6 +132,7 @@ class RandomListNode < TreeNode
     end
 
     def children
+        # dont sort child nodes
         @children
     end
 end

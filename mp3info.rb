@@ -295,7 +295,7 @@ class Mp3Info
   
   # Test the presence of an id3v1 tag in file +filename+
   def self.hastag1?(filename)
-    File.open(filename) { |f|
+    File.open(filename, 'rb') { |f|
       f.seek(-TAGSIZE, File::SEEK_END)
       f.read(3) == "TAG"
     }
@@ -303,7 +303,7 @@ class Mp3Info
 
   # Test the presence of an id3v2 tag in file +filename+
   def self.hastag2?(filename)
-    File.open(filename) { |f|
+    File.open(filename, 'rb') { |f|
       f.read(3) == "ID3"
     }
   end
@@ -313,7 +313,7 @@ class Mp3Info
   def self.removetag1(filename)
     if self.hastag1?(filename)
       newsize = File.size(filename) - TAGSIZE
-      File.open(filename, "r+") { |f| f.truncate(newsize) }
+      File.open(filename, "rb+") { |f| f.truncate(newsize) }
     end
   end
 
