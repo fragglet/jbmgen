@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+
+require "JBMFile.rb"
+
+dict = Dictionary.new
+pathlist = PathList.new(dict)
+fileentry = FileEntry.new(pathlist, dict, "Music/the_smashing_pumpkins/gish/01_-_i_am_one.mp3")
+
+stream = ByteArrayStream.new
+
+dict.build
+pathlist.build
+dict.write(stream)
+stream.pad
+pathlist.write(stream)
+stream.pad
+fileentry.write(stream)
+
+stream.write(STDOUT)
+
