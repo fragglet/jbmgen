@@ -22,32 +22,53 @@
 require "JBMFile.rb"
 
 def traverse_files(root_path)
-    Dir.foreach(root_path) do |filename|
-        next if filename == '.' || filename == '..'
-        filename = "#{root_path}/#{filename}"
-        if File.directory?(filename)
-            traverse_files(filename) do |filename|
+    begin
+        Dir.foreach(root_path) do |filename|
+            next if filename == '.' || filename == '..'
+            filename = "#{root_path}/#{filename}"
+            if File.directory?(filename)
+                traverse_files(filename) do |filename|
+                    yield filename
+                end
+            else
                 yield filename
             end
-        else
-            yield filename
         end
+    rescue
+        # an error occurred - permission denied for example
     end
 end
 
 def find_archos
-    mount_output = `mount`
+    if RUBY_PLATFORM =~ /(bccwin|mingw|cygwin|mswin)/
 
-    mount_output.each_line do |s|
-        begin
-            if s =~ /on (\S+)/
-                path = $1
+        # under windows, check every drive for lib.jbm
 
-                if path =~ /^\// && File.exists?("#{path}/lib.jbm")
-                    return path
+        for drive in 'a'..'z'
+            begin
+                if File.exists?("#{drive}:/lib.jbm")
+                    return "#{drive}:/"
                 end
+            rescue
             end
-        rescue
+        end
+    else
+
+        # under unix, parse the output from "mount"
+
+        mount_output = `mount`
+
+        mount_output.each_line do |s|
+            begin
+                if s =~ /on (\S+)/
+                    path = $1
+
+                    if path =~ /^\// && File.exists?("#{path}/lib.jbm")
+                        return path
+                    end
+                end
+            rescue
+            end
         end
     end
 
@@ -63,12 +84,12 @@ Usage: #{$0} [ -p path ]
 
   -p path          Use path as the path to the mounted Archos device. Generate
                    lib.jbm in the root directory of the path.
-		   By default, all mounts are searched for the existence of
-		   an existing lib.jbm file as an indicator.
+                   By default, all mounts are searched for the existence of
+                   an existing lib.jbm file as an indicator.
   -m media_path    Only catalogs files in media_path on the device.  For 
                    example, if your Archos is mounted at /mnt/sda1, and
-		   you specify -m Music, only look in /mnt/sda1/Music for
-		   mp3s.
+                   you specify -m Music, only look in /mnt/sda1/Music for
+                   mp3s.
   -o output_file   By default, a file 'lib.jbm' is generated on the root of
                    the archos path.  This allows you to override it and 
 		   output to a different location.
