@@ -11,7 +11,10 @@ class JBMFile
         @pathlist = PathList.new(@dict)
         @filelist = FileList.new
         @root_list = TreeNode.new(@dict, "ROOT", nil)
-        get_path("shoe/monkey/fraggle")
+        path = get_path("shoe/monkey/fraggle")
+        @search_list = path
+        file = add_file("Music/the_smashing_pumpkins/1991_gish/01_-_i_am_one.mp3")
+        path.add(file)
     end
 
     def get_path(path)
@@ -36,6 +39,7 @@ class JBMFile
     def add_file(filename)
         newfile = FileEntry.new(@pathlist, @dict, filename)
         @filelist.add(newfile)
+        newfile
     end
 
     def assign_ids
@@ -51,7 +55,6 @@ class JBMFile
         @root_list.traverse_tree do 
             i += 1
         end
-        puts "#{i} lists"
         i
     end
 
@@ -88,7 +91,7 @@ class JBMFile
 
         data.pos = 0
         "JBML".each_byte { |b| data.put8(b) }
-        data.put32(0x0101)
+        data.put32(0x0102)
         data.put32(@filelist.length)
         data.put32(num_lists)
         data.putptr(@filelist)
@@ -96,8 +99,8 @@ class JBMFile
         data.putptr(listdata)
         data.putptr(@pathlist)
         data.putptr(@dict)
-        data.put32(0)
-        data.put32(@root_list.file_id)     # this should be the search list
+        data.put32(data.length)
+        data.put32(@search_list.file_id)     # this should be the search list
 
         File.open(filename, 'w') do |file|
             data.write(file)
