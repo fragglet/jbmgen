@@ -64,7 +64,15 @@ Usage: #{$0} [ -p path ]
   -p path          Use path as the path to the mounted Archos device. Generate
                    lib.jbm in the root directory of the path.
 		   By default, all mounts are searched for the existence of
-		   an existing lib.jbm file.
+		   an existing lib.jbm file as an indicator.
+  -m media_path    Only catalogs files in media_path on the device.  For 
+                   example, if your Archos is mounted at /mnt/sda1, and
+		   you specify -m Music, only look in /mnt/sda1/Music for
+		   mp3s.
+  -o output_file   By default, a file 'lib.jbm' is generated on the root of
+                   the archos path.  This allows you to override it and 
+		   output to a different location.
+  -q               Quiet operation
 
 HELP_END
 end
@@ -72,6 +80,9 @@ end
 # parse command line options
 
 archos_path = nil
+quiet = false
+media_path = nil
+output_file = nil
 
 i = 0
 
@@ -86,6 +97,14 @@ while i<ARGV.length
 	when '-h' then
 	    helppage
 	    exit
+	when '-q' then
+	    quiet = true
+	when '-m' then
+	    i += 1
+	    media_path = ARGV[i]
+	when '-o' then
+	    i += 1
+	    output_file = ARGV[i]
 	else
 	    puts "Invalid parameter '#{arg}'"
 	    exit(-1)
@@ -94,28 +113,40 @@ while i<ARGV.length
     i += 1
 end
 
-if archos_path == nil
+if archos_path != nil
+    puts "Using Archos path #{archos_path}" if !quiet
+else
     archos_path = find_archos
 
     if archos_path == nil
         raise "Archos GMini not found!  Please mount the Archos device or " +
     	      "use the -p command-line option."
     else
-        puts "Archos GMini found at #{archos_path}"
+        puts "Archos GMini found at #{archos_path}" if !quiet
     end
+end
+
+if output_file == nil
+    output_file = "#{archos_path}/lib.jbm"
 end
 
 file = JBMFile.new
 
-traverse_files(archos_path) do |mp3|
+if media_path == nil
+    full_media_path = archos_path
+else
+    full_media_path = "#{archos_path}/#{media_path}"
+end
+
+traverse_files(full_media_path) do |mp3|
     base_filename = mp3[archos_path.length+1, mp3.length]
     begin
         file.add_file(mp3, base_filename)
-        puts base_filename
+        puts base_filename if !quiet
     rescue
     end
 end
 
-file.write_to "#{archos_path}/lib.jbm"
+file.write_to output_file
 
 
