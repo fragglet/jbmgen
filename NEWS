@@ -1,4 +1,12 @@
 
+  1.1.0           25/01/2005
+    Bugfixes:
+     * Library file not generated properly under Windows (not in binary mode)
+     * Tree not generated properly with artist names containing '/'
+    Features added:
+     * Generate "all tracks" list for artists with more than one album
+     * Locates mount point for GMini under Windows
+
   1.0.0
     First release
 
