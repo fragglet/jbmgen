@@ -8,7 +8,7 @@ class ListData
     end
 
     def add(o)
-        @entries.push(o.id)
+        @entries.push(o.file_id)
     end
 
     def length
@@ -17,8 +17,9 @@ class ListData
 
     def build
         @data = ByteArrayStream.new
-        @entries.each do |id|
-            @data.put16(id)
+        @entries.each do |file_id|
+            puts "file_id: #{file_id}"
+            @data.put16(file_id)
         end
     end
 
@@ -30,7 +31,7 @@ end
 
 class TreeNode
 
-    attr_accessor :id
+    attr_accessor :file_id
     attr_accessor :type
     attr_reader :name
 
@@ -52,7 +53,7 @@ class TreeNode
 
     def traverse_tree
         yield self
-        @children.each do |node|
+        @children.each_value do |node|
             if node.respond_to? :traverse_tree
                 node.traverse_tree do |subnode|
                     yield subnode
@@ -62,7 +63,7 @@ class TreeNode
     end
 
     def children
-        @children.keys.sort { |a, b|
+        @children.values.sort { |a, b|
             a.name <=> b.name
         }
     end
@@ -74,7 +75,7 @@ class TreeNode
 
         parent_id = 0
         if @parent != nil
-            parent_id = @parent.id
+            parent_id = @parent.file_id
         end
         nodedata.put16(parent_id)
         nodedata.putptr(@name)

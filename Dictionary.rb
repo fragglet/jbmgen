@@ -3,6 +3,8 @@ require "Pointable.rb"
 
 class DictionaryString < String
 
+    attr_reader :pos
+
     def initialize(s)
         replace(s)
     end
