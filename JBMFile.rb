@@ -39,11 +39,10 @@ class JBMFile
     end
 
     def assign_ids
-        id = @filelist.length
+        file_id = @filelist.length
         @root_list.traverse_tree do |node|
-            puts node.name
-            node.id = id 
-            id += 1
+            node.file_id = file_id 
+            file_id += 1
         end
     end
 
@@ -52,6 +51,7 @@ class JBMFile
         @root_list.traverse_tree do 
             i += 1
         end
+        puts "#{i} lists"
         i
     end
 
@@ -97,7 +97,7 @@ class JBMFile
         data.putptr(@pathlist)
         data.putptr(@dict)
         data.put32(0)
-        data.put32(@root_list.id)     # this should be the search list
+        data.put32(@root_list.file_id)     # this should be the search list
 
         File.open(filename, 'w') do |file|
             data.write(file)

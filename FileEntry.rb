@@ -5,7 +5,7 @@ class FileEntry
 
     include Pointable
 
-    attr_accessor :id
+    attr_accessor :file_id
 
     def name
         @filename
@@ -72,7 +72,7 @@ class FileList
     end
 
     def add(file)
-        file.id = @files.length
+        file.file_id = @files.length
         @files.push(file)
     end
 
