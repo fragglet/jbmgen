@@ -47,9 +47,9 @@ file = JBMFile.new
 
 traverse_files(archos_path) do |mp3|
     base_filename = mp3[archos_path.length+1, mp3.length]
-    puts base_filename
     begin
         file.add_file(mp3, base_filename)
+        puts base_filename
     rescue
     end
 end

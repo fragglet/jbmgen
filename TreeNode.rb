@@ -51,7 +51,8 @@ class TreeNode
     attr_reader :name
 
     def initialize(dict, name, parent)
-        @children = {}
+        @children = []
+        @children_hash = {}
         @type = 0
         @dict = dict
         @name = dict[name]
@@ -59,12 +60,13 @@ class TreeNode
     end
 
     def [](name)
-        result = @children[name]
+        result = @children_hash[name]
         result
     end
 
     def add(entry)
-        @children[entry.name] = entry
+        @children_hash[entry.name] = entry
+        @children.push(entry)
     end
 
     # add a new "directory"
@@ -100,20 +102,22 @@ class TreeNode
             dir, path = name, nil
         end
 
-        if @children[dir] == nil 
+        if @children_hash[dir] == nil 
             new_child(dir)
         end
 
         if path == nil
-            @children[dir]
+            @children_hash[dir]
         else
-            @children[dir].get_path(path)
+            @children_hash[dir].get_path(path)
         end
     end
 
     def children
-        @children.values.sort { |a, b|
-            if a.respond_to? :title
+        @children.sort { |a, b|
+            if block_given?
+                yield a, b
+            elsif a.respond_to? :title
                 a.title.downcase <=> b.title.downcase
             else
                 a.name.downcase <=> b.name.downcase

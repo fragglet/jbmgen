@@ -41,8 +41,43 @@ class JBMFile
         artist_name = "Unknown" if artist_name == ""
         artist_list = @root_list.artist_list.get_path("#{artist_name}/#{album_name}")
         artist_list.add(newfile)
+
+        # add to genre list
+        genre = newfile.genre
+        genre_name = if genre == 255
+            "Unknown"
+        else
+            Mp3Info::GENRES[genre]
+        end
+        genre_list = @root_list.genre_list.get_path(genre_name)
+        genre_list.add(newfile)
         
         newfile
+    end
+
+    def generate_random_lists
+        # dont try and put more items in a list than we have in the
+        # entire library !
+
+        track_count = 20
+        track_count = @filelist.length if @filelist.length < track_count
+    
+        # generate 20 playlists
+
+        20.times do |i|
+            path = @root_list.random_list.get_path("Random List #{i+1}")
+            used_tracks = {}
+
+            # add tracks
+
+            track_count.times do 
+                begin
+                    file = @filelist[rand(@filelist.length)]
+                end until used_tracks[file] == nil
+                path.add(file)
+                used_tracks[file] = 1
+            end
+        end
     end
 
     # we need to give an id to every list in the tree
@@ -73,6 +108,8 @@ class JBMFile
     end
 
     def write_to(filename)
+        generate_random_lists
+
         @dict.build
         @pathlist.build
         @filelist.build
