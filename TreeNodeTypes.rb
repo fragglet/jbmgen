@@ -10,7 +10,7 @@ class AlbumNode < TreeNode
     end
 
     def children
-        @children.values.sort { |a, b|
+        super { |a, b|
             a.track <=> b.track
         }
     end
@@ -67,6 +67,56 @@ class NameListNode < TreeNode
     end
 end
 
+# "browse by genre"
+
+class GenreNode < TreeNode
+    def initialize(*opts)
+        super(*opts)
+        @type = TreeNode::NODE_GENRE
+    end
+end
+
+class GenreListNode < TreeNode
+    def initialize(dict, parent)
+        super(dict, "Genre", parent)
+        @type = TreeNode::NODE_GENRE
+    end
+
+    def new_child(name)
+        super(name, GenreNode)
+    end
+end
+
+# lists of random tracks
+
+class RandomNode < TreeNode
+    attr_accessor :entry
+
+    def initialize(*opts)
+        super(*opts)
+        @type = TreeNode::NODE_M3U
+    end
+
+    def children
+        @children
+    end
+end
+
+class RandomListNode < TreeNode
+    def initialize(dict, parent)
+        super(dict, "Random", parent)
+        @type = TreeNode::NODE_M3U
+    end
+
+    def new_child(name)
+        node = super(name, RandomNode)
+    end
+
+    def children
+        @children
+    end
+end
+
 # root of the entire hierarchy, holds all the root nodes
 # (artist, album, etc)
 
@@ -74,6 +124,8 @@ class RootNode < TreeNode
     attr_reader :name_list
     attr_reader :album_list
     attr_reader :artist_list
+    attr_reader :genre_list
+    attr_reader :random_list
 
     def initialize(dict)
         super(dict, "ROOT", nil)
@@ -81,10 +133,14 @@ class RootNode < TreeNode
         @name_list = NameListNode.new(dict, self)
         @album_list = AlbumListNode.new(dict, self)
         @artist_list = ArtistListNode.new(dict, self)
+        @genre_list = GenreListNode.new(dict, self)
+        @random_list = RandomListNode.new(dict, self)
 
         add(@name_list)
         add(@album_list)
         add(@artist_list)
+        add(@genre_list)
+        add(@random_list)
     end
 end
 

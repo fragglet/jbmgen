@@ -111,6 +111,10 @@ class FileList
         @files = []
     end
 
+    def [](i)
+        @files[i]
+    end
+
     def add(file)
         # assign an id; we take the first available one (at
         # the end of the list), so the id is really the index
