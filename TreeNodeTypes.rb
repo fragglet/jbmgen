@@ -93,15 +93,24 @@ class ArtistNode < TreeNode
         super(name, AlbumNode)
     end
 
+    def children
+        list = super
+        if @all_tracks_list != nil
+            list.delete(@all_tracks_list)
+            list = [@all_tracks_list, *list]
+        end
+        list
+    end
+
     def generate_all_tracks_list
         if @children.size > 1
-            list = AllTracksListNode.new(@dict, self)
+            @all_tracks_list = AllTracksListNode.new(@dict, self)
             @children.each do |album|
                 album.children.each do |song|
-                    list.add(song)
+                    @all_tracks_list.add(song)
                 end
             end
-            add(list)
+            add(@all_tracks_list)
         end
     end
 end
