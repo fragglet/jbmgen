@@ -11,10 +11,8 @@ class JBMFile
         @pathlist = PathList.new(@dict)
         @filelist = FileList.new
         @root_list = TreeNode.new(@dict, "ROOT", nil)
-        path = get_path("shoe/monkey/fraggle")
+        path = get_path("Name")
         @search_list = path
-        file = add_file("Music/the_smashing_pumpkins/1991_gish/01_-_i_am_one.mp3")
-        path.add(file)
     end
 
     def get_path(path)
@@ -36,9 +34,14 @@ class JBMFile
         dir[filename]
     end
 
-    def add_file(filename)
-        newfile = FileEntry.new(@pathlist, @dict, filename)
+    def add_file(filename, relative_filename)
+        newfile = FileEntry.new(@pathlist, @dict, relative_filename)
         @filelist.add(newfile)
+
+        # set id3 info
+        newfile.set_id3info(filename)
+        @search_list.add(newfile)
+        
         newfile
     end
 
