@@ -50,23 +50,19 @@ class JBMFile
 
         # add to album list 
         album_name = newfile.album
-        album_name = "Unknown" if album_name == ""
+        album_name = "Unknown" if album_name == nil
         album_list = @root_list.album_list.get_path([album_name])
         album_list.add(newfile)
 
         # add to artist list
         artist_name = newfile.artist
-        artist_name = "Unknown" if artist_name == ""
+        artist_name = "Unknown" if artist_name == nil
         artist_list = @root_list.artist_list.get_path([artist_name, album_name])
         artist_list.add(newfile)
 
         # add to genre list
-        genre = newfile.genre
-        genre_name = if genre == 255
-            "Unknown"
-        else
-            Mp3Info::GENRES[genre]
-        end
+        genre_name = newfile.genre_s
+        genre_name = "Unknown" if genre_name == nil
         genre_list = @root_list.genre_list.get_path([genre_name])
         genre_list.add(newfile)
         

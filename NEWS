@@ -1,4 +1,10 @@
 
+    Bugfixes:
+     * Do not add entries to dictionary and path list for files which are
+       not used in the library
+     * Allow indexing of files in the root directory
+     * Handle ID3v2 tags properly
+
   1.1.0           25/01/2005
     Bugfixes:
      * Library file not generated properly under Windows (not in binary mode)

@@ -31,6 +31,7 @@ class FileEntry
     attr_reader :album
     attr_reader :artist
     attr_reader :genre
+    attr_reader :genre_s
     attr_reader :track
 
     def name
@@ -38,11 +39,16 @@ class FileEntry
     end
 
     def initialize(pathlist, dict, filename)
-        if filename !~ /^(.*)\/(.*)\.(.*)/
+
+        path, extension = nil, nil
+
+        if filename =~ /^(.*)\/(.*)\.(.*)/
+            path, filename, extension = $1, $2, $3
+        elsif filename !~ /\// && filename =~ /^(.*)\.(.*)/
+            path, filename, extension = '', $1, $2
+        else
             raise "Invalid filename"
         end
-
-        path, filename, extension = $1, $2, $3
 
         extensions = {
             'mp3' => 0,
@@ -51,16 +57,16 @@ class FileEntry
             'wma' => 3,
         }
 
-        @dict = dict
-        @path = pathlist[path]
-        @filename = dict[filename]
-
         extension.downcase!
         if extensions[extension] != nil then
             @type = extensions[extension]
         else
             raise "Unknown file extension: '#{extension}'"
         end
+
+        @dict = dict
+        @path = pathlist[path]
+        @filename = dict[filename]
         
         # todo: fill these in with id3 data!
 
@@ -76,8 +82,33 @@ class FileEntry
         @flags = 0
     end
 
-    def tag_info(info, tag)
-        info.tag1[tag] || info.tag2[tag]
+    def tag_data(info)
+        tag1 = info.tag1 || {}
+        tag2 = info.tag2 || {}
+        data = {
+            'artist' => tag2['TPE1'] || tag2['TP1'] || tag1['artist'],
+            'album' => tag2['TALB'] || tag2['TAL'] || tag1['album'],
+            'title' => tag2['TIT2'] || tag2['TT2'] || tag1['title'],
+            'track' => tag2['TRCK'] || tag2['TRK'] || tag1['tracknum'],
+            'year' => tag2['TYER'] || tag2['TYE'] || tag1['year'],
+            'genre' => tag1['genre'],
+            'genre_s' => tag2['TCON'] || tag2['TCO'] || tag1['genre_s'],
+        }
+        for key in data.keys
+            data.delete(key) if data[key] == ''
+        end
+        for key in ['year', 'track', 'genre']
+            data[key] = data[key].to_i if data[key] != nil
+        end
+
+        # in an id3v2 genre string, "(xx)" means id3v1 genre #xx
+
+        if data['genre_s'] != nil && data['genre_s'] =~ /^\((\d+\))$/
+            genre_id = $1.to_i
+            data['genre_s'] = Mp3Info::GENRES[genre_id]
+            data['genre'] = genre_id
+        end
+        data
     end
 
     # get the id3 data from the file 
@@ -85,19 +116,14 @@ class FileEntry
     def set_id3info(filename)
         begin
             mp3info = Mp3Info.new(filename)
-            artist = @dict[tag_info(mp3info, 'artist')]
-            album = @dict[tag_info(mp3info, 'album')]
-            title = @dict[tag_info(mp3info, 'title')]
-            track = tag_info(mp3info, 'tracknum')
-            year = tag_info(mp3info, 'year')
-            genre = tag_info(mp3info, 'genre')
-
-            @artist = artist if artist != nil
-            @album = album if album != nil
-            @title = title if title != nil
-            @track = track if track != nil
-            @year = year if year != nil
-            @genre = genre if genre != nil
+            data = tag_data(mp3info)
+            @artist = @dict[data['artist']] if data['artist']
+            @album = @dict[data['album']] if data['album']
+            @title = @dict[data['title']] if data['title']
+            @track = data['track'] if data['track']
+            @year = data['year'] if data['year']
+            @genre = data['genre'] if data['genre']
+            @genre_s = data['genre_s'] if data['genre_s']
         rescue
             # rescue from errors while reading id3
         end

@@ -164,7 +164,8 @@ traverse_files(full_media_path) do |mp3|
     begin
         file.add_file(mp3, base_filename)
         puts base_filename if !quiet
-    rescue
+    rescue 
+        # file could not be added
     end
 end
 
