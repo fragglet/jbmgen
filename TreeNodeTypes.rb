@@ -19,6 +19,24 @@
 
 require 'TreeNode.rb'
 
+# "browse by name"
+
+class NameListNode < TreeNode
+    def initialize(dict, parent)
+        super(dict, "Name", parent)
+        @type = TreeNode::NODE_SONG
+    end
+end
+
+# "browse by genre"
+
+class GenreNode < TreeNode
+    def initialize(*opts)
+        super(*opts)
+        @type = TreeNode::NODE_GENRE
+    end
+end
+
 # an album
 
 class AlbumNode < TreeNode
@@ -51,6 +69,17 @@ class AlbumListNode < TreeNode
     end
 end
 
+class AllTracksListNode < TreeNode
+    def initialize(dict, parent)
+        super(dict, "All Tracks", parent)
+        @type = TreeNode::NODE_SONG
+    end
+
+    def new_child
+        puts "#{@name} not supposed to have subdirs"
+    end
+end
+
 # "browse by artist"
 
 class ArtistNode < TreeNode
@@ -63,6 +92,18 @@ class ArtistNode < TreeNode
         # then sort by album
         super(name, AlbumNode)
     end
+
+    def generate_all_tracks_list
+        if @children.size > 1
+            list = AllTracksListNode.new(@dict, self)
+            @children.each do |album|
+                album.children.each do |song|
+                    list.add(song)
+                end
+            end
+            add(list)
+        end
+    end
 end
 
 class ArtistListNode < TreeNode
@@ -73,24 +114,6 @@ class ArtistListNode < TreeNode
 
     def new_child(name)
         super(name, ArtistNode)
-    end
-end
-
-# "browse by name"
-
-class NameListNode < TreeNode
-    def initialize(dict, parent)
-        super(dict, "Name", parent)
-        @type = TreeNode::NODE_SONG
-    end
-end
-
-# "browse by genre"
-
-class GenreNode < TreeNode
-    def initialize(*opts)
-        super(*opts)
-        @type = TreeNode::NODE_GENRE
     end
 end
 
