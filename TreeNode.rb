@@ -110,21 +110,15 @@ class TreeNode
 
     # search down to find a path; recursive
 
-    def get_path(name)
+    def get_path(path_list)
     
-        dir, path = nil, nil
-
-        if name =~ /^(.*?)\/(.*)$/
-            dir, path = $1, $2
-        else
-            dir, path = name, nil
-        end
+        dir, path = path_list[0], path_list[1..-1]
 
         if @children_hash[dir] == nil 
             new_child(dir)
         end
 
-        if path == nil
+        if path.length == 0
             @children_hash[dir]
         else
             @children_hash[dir].get_path(path)
