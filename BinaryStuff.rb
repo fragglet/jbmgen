@@ -11,6 +11,12 @@ module BinaryStuff
         putc((i >> 8) & 0xff)
     end
 
+    def put24(i)
+        putc(i & 0xff)
+        putc((i >> 8) & 0xff)
+        putc((i >> 16) & 0xff)
+    end
+
     def put32(i)
         putc(i & 0xff)
         putc((i >> 8) & 0xff)
@@ -35,9 +41,12 @@ module BinaryStuff
 
     # pad out to the next 512-byte boundary
     def pad
+        padding = 0
         while (pos % 512 != 0)
+            padding += 1
             putc(0)
         end
+        puts padding
     end
 end
 
@@ -49,7 +58,7 @@ class ByteArrayStream
 
     include BinaryStuff
 
-    attr :pos
+    attr_accessor :pos
 
     def initialize()
         @data = []

@@ -1,19 +1,15 @@
 
 require "Pointable.rb"
 
-class DictionaryString
+class DictionaryString < String
 
     def initialize(s)
-        @s = s
-    end
-
-    def to_s
-        @s
+        replace(s)
     end
 
     def write(data)
         @pos = data.pos
-        data.putstring(@s)
+        data.putstring(self)
     end
 
     include Pointable

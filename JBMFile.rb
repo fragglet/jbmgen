@@ -10,7 +10,27 @@ class JBMFile
         @dict = Dictionary.new
         @pathlist = PathList.new(@dict)
         @filelist = FileList.new
-        @root_list = TreeNode.new
+        @root_list = TreeNode.new(@dict, "ROOT", nil)
+        get_path("shoe/monkey/fraggle")
+    end
+
+    def get_path(path)
+        dir, filename = nil, nil
+
+        if path =~ /^(.*)\/(.*?)$/
+            dirname, filename = $1, $2
+            dir = get_path(dirname)
+        else
+            dir = @root_list
+            filename = path
+        end
+
+        if dir[filename] == nil 
+            newnode = TreeNode.new(@dict, filename, dir)
+            dir.add(newnode)
+        end
+        
+        dir[filename]
     end
 
     def add_file(filename)
@@ -21,8 +41,66 @@ class JBMFile
     def assign_ids
         id = @filelist.length
         @root_list.traverse_tree do |node|
+            puts node.name
             node.id = id 
             id += 1
+        end
+    end
+
+    def num_lists
+        i = 0
+        @root_list.traverse_tree do 
+            i += 1
+        end
+        i
+    end
+
+    def write_to(filename)
+        @dict.build
+        @pathlist.build
+        @filelist.build
+        assign_ids
+
+        data = ByteArrayStream.new
+        listdata = ListData.new
+
+        # pad the start, we'll come back later..
+        
+        data.put8(0)
+        data.pad
+        
+        @filelist.write(data)
+        data.pad
+        @pathlist.write(data)
+        data.pad
+        listptr = data.pos
+        @root_list.traverse_tree do |list|
+            list.write(data, listdata)
+        end
+        data.pad
+        listdata.build
+        listdata.write(data)
+        data.pad
+        @dict.write(data)
+        data.pad
+
+        # go back and write the header
+
+        data.pos = 0
+        "JBML".each_byte { |b| data.put8(b) }
+        data.put32(0x0101)
+        data.put32(@filelist.length)
+        data.put32(num_lists)
+        data.putptr(@filelist)
+        data.put32(listptr)
+        data.putptr(listdata)
+        data.putptr(@pathlist)
+        data.putptr(@dict)
+        data.put32(0)
+        data.put32(@root_list.id)     # this should be the search list
+
+        File.open(filename, 'w') do |file|
+            data.write(file)
         end
     end
 end
