@@ -171,7 +171,7 @@ class JBMFile
         data.put32(data.length)
         data.put32(@search_list.file_id)
 
-        File.open(filename, 'w') do |file|
+        File.open(filename, 'wb') do |file|
             data.write(file)
         end
     end
