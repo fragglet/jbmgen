@@ -125,8 +125,17 @@ class JBMFile
         i
     end
 
+    def generate_all_tracks_lists
+        @root_list.traverse_tree do |node|
+            if node.respond_to?(:generate_all_tracks_list)
+                node.generate_all_tracks_list
+            end
+        end
+    end
+
     def write_to(filename)
         generate_random_lists
+        generate_all_tracks_lists
 
         @dict.build
         @pathlist.build
