@@ -5,7 +5,11 @@ class FileEntry
 
     include Pointable
 
-    attr :id
+    attr_accessor :id
+
+    def name
+        @filename
+    end
 
     def initialize(pathlist, dict, filename)
         filename =~ /^(.*)\/(.*)\.(.*)/
@@ -81,6 +85,11 @@ class FileList
         @files.each do |file|
             file.write(@data)
         end
+    end
+
+    def write(stream)
+        @pos = stream.pos
+        @data.write(stream)
     end
 end
 

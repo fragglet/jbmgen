@@ -11,60 +11,77 @@ class ListData
         @entries.push(o.id)
     end
 
-    def entries
+    def length
         @entries.length
     end
 
     def build
         @data = ByteArrayStream.new
         @entries.each do |id|
-            @data.puti16(id)
+            @data.put16(id)
         end
+    end
+
+    def write(stream)
+        @pos = stream.pos
+        @data.write(stream)
     end
 end
 
 class TreeNode
 
-    attr :id
-    attr :type
+    attr_accessor :id
+    attr_accessor :type
+    attr_reader :name
 
     def initialize(dict, name, parent)
-        @children = []
+        @children = {}
         @type = 0
         @name = dict[name]
         @parent = parent
     end
 
+    def [](name)
+        result = @children[name]
+        result
+    end
+
     def add(entry)
-        @children.push(entry)
+        @children[entry.name] = entry
     end
 
     def traverse_tree
-        yield
+        yield self
         @children.each do |node|
             if node.respond_to? :traverse_tree
-                node.traverse_tree do
-                    yield
+                node.traverse_tree do |subnode|
+                    yield subnode
                 end
             end
         end
     end
 
+    def children
+        @children.keys.sort { |a, b|
+            a.name <=> b.name
+        }
+    end
+
     def write(nodedata, listdata)
-        nodedata.puti8(@type)
-        nodedata.puti24(listdata.length)
-        nodedata.puti16(@children.length)
+        nodedata.put8(@type)
+        nodedata.put24(listdata.length)
+        nodedata.put16(@children.length)
 
         parent_id = 0
         if @parent != nil
             parent_id = @parent.id
         end
-        nodedata.puti16(parent_id)
+        nodedata.put16(parent_id)
         nodedata.putptr(@name)
 
         # write list entries
 
-        @children.each do |child|
+        children.each do |child|
             listdata.add(child)
         end
     end

@@ -51,6 +51,8 @@ class PathList
         @pos = stream.pos
         @data.write(stream)
     end
+
+    include Pointable
 end
 
 
