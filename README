@@ -1,0 +1,47 @@
+
+  jbmgen
+  ------
+
+  This is a tool to generate the lib.jbm file, used to support the ARCLibrary 
+  functionality on the Archos GMini 120 and 220 MP3 players.  Later players
+  in the GMini series apparently do not need this file as the ARCLibrary 
+  can function independently of a host computer.
+
+  FAQ
+  
+  Q. Why is this needed?
+  A. The Archos GMini MP3 players have a system called "ARCLibrary" - this 
+     allows you to browse through your MP3s based on various different
+     categories. For example, you can search by artist name, genre, etc.
+     This is similar to functionality which exists on Apple's iPod.
+
+     The catch is that for the ARCLibrary system to work, you must install
+     a program on your computer called "MusicMatch".  This catalogs all the
+     MP3s on your player and generates a file called "lib.jbm" which the
+     player then uses. If you add an MP3 file to your player, it will not
+     reappear in ARCLibrary until you rerun MusicMatch to update the library
+     file.
+
+     MusicMatch is proprietary software which only runs on Microsoft Windows.
+     jbmgen is Free Software (in the Beer and Speech sense) which will run
+     on GNU/Linux and possibly other operating systems.
+
+  Q. Can you do x,y?
+  A. The ARCLibrary system basically lets you build a tree of menus which you
+     can browse.  jbmgen contains some extra things that MusicMatch did not,
+     eg. it generates random playlists.  It should be fairly straightforward
+     to add all kinds of extra functionality (ever wanted to browse by 
+     file size or the ID3 "comments" field for example?)
+
+  Q. What is this crazy language you have used?
+  A. jbmgen is written in Ruby, a high level scripting language created by
+     Yukihiro "Matz" Matsumoto.  See http://rubycentral.com/ for more 
+     information.
+
+  Q. Is this legal?
+  A. Yes. Archos even released the technical specifications of the jbm library
+     format onto Yahoo! groups.  There is a copy of this on the jbmgen 
+     website.
+  
+  For more information, see http://jbmgen.sourceforge.net/
+
