@@ -12,8 +12,8 @@ class DictionaryString
     end
 
     def write(data)
-	@pos = data.pos
-	data.putstring(@s)
+        @pos = data.pos
+        data.putstring(@s)
     end
 
     include Pointable
@@ -38,11 +38,11 @@ class Dictionary
     def build
         # build a byte array of all the data
 
-    	@data = ByteArrayStream.new
+        @data = ByteArrayStream.new
 
-	@strings.each_value do |str|
-	    str.write(@data)
-	end
+        @strings.each_value do |str|
+            str.write(@data)
+        end
     end
 
     def write(stream)

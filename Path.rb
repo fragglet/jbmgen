@@ -17,11 +17,11 @@ class Path
     end
 
     def write(data)
-	@pos = data.pos
-	data.put32(@directories.length)
-	@directories.each do |dir|
-	    data.putptr dir
-	end
+        @pos = data.pos
+        data.put32(@directories.length)
+        @directories.each do |dir|
+            data.putptr dir
+        end
     end
 end
 
@@ -40,16 +40,16 @@ class PathList
     end
 
     def build
-	@data = ByteArrayStream.new
+        @data = ByteArrayStream.new
 
-	@paths.each_value do |path|
-	    path.write(@data)
-	end
+        @paths.each_value do |path|
+            path.write(@data)
+        end
     end
 
     def write(stream)
         @pos = stream.pos
-    	@data.write(stream)
+        @data.write(stream)
     end
 end
 
