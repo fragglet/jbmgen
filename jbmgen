@@ -54,12 +54,55 @@ def find_archos
     nil
 end
 
-archos_path = find_archos
+def helppage
+    puts <<HELP_END
+
+#{$0} : Generate lib.jbm files for use on Archos GMini 
+
+Usage: #{$0} [ -p path ]
+
+  -p path          Use path as the path to the mounted Archos device. Generate
+                   lib.jbm in the root directory of the path.
+		   By default, all mounts are searched for the existence of
+		   an existing lib.jbm file.
+
+HELP_END
+end
+
+# parse command line options
+
+archos_path = nil
+
+i = 0
+
+while i<ARGV.length
+
+    arg = ARGV[i]
+
+    case arg
+        when '-p' then
+	    i += 1
+	    archos_path = ARGV[i]
+	when '-h' then
+	    helppage
+	    exit
+	else
+	    puts "Invalid parameter '#{arg}'"
+	    exit(-1)
+    end
+
+    i += 1
+end
 
 if archos_path == nil
-    raise "Archos GMini not found!"
-else
-    puts "Archos GMini found at #{archos_path}"
+    archos_path = find_archos
+
+    if archos_path == nil
+        raise "Archos GMini not found!  Please mount the Archos device or " +
+    	      "use the -p command-line option."
+    else
+        puts "Archos GMini found at #{archos_path}"
+    end
 end
 
 file = JBMFile.new
@@ -73,6 +116,6 @@ traverse_files(archos_path) do |mp3|
     end
 end
 
-file.write_to 'lib.jbm'
+file.write_to "#{archos_path}/lib.jbm"
 
 
