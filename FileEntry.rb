@@ -1,5 +1,6 @@
 
-require "Pointable.rb"
+require 'Pointable.rb'
+require 'mp3info.rb'
 
 class FileEntry
 
@@ -23,6 +24,7 @@ class FileEntry
             'wma' => 3,
         }
 
+        @dict = dict
         @path = pathlist[path]
         @filename = dict[filename]
 
@@ -45,6 +47,29 @@ class FileEntry
         # these are always like this:
         @reserved = 0
         @flags = 0
+    end
+
+    def tag_info(info, tag)
+        info.tag1[tag] || info.tag2[tag]
+    end
+    
+    def set_id3info(filename)
+        begin
+            mp3info = Mp3Info.new(filename)
+            artist = @dict[tag_info(mp3info, 'artist')]
+            album = @dict[tag_info(mp3info, 'artist')]
+            title = @dict[tag_info(mp3info, 'title')]
+            track = tag_info(mp3info, 'tracknum')
+            year = tag_info(mp3info, 'year')
+
+            @artist = artist if artist != nil
+            @album = album if album != nil
+            @title = title if title != nil
+            @track = track if track != nil
+            @year = year if year != nil
+        rescue
+            # rescue from errors while reading id3
+        end
     end
 
     def write(data)

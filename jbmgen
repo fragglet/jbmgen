@@ -2,6 +2,18 @@
 
 require "JBMFile.rb"
 
+archos_path = "/media/sdb1"
+
 file = JBMFile.new
+
+mp3files = Dir.glob(archos_path + '/Music/the_smashing_pumpkins/*/*.mp3')
+
+for mp3 in mp3files
+    base_filename = mp3[archos_path.length+1, mp3.length]
+    puts base_filename
+    file.add_file(mp3, base_filename)
+end
+
 file.write_to 'lib.jbm'
+
 
