@@ -41,12 +41,9 @@ module BinaryStuff
 
     # pad out to the next 512-byte boundary
     def pad
-        padding = 0
         while (pos % 512 != 0)
-            padding += 1
             putc(0)
         end
-        puts padding
     end
 end
 
@@ -68,6 +65,10 @@ class ByteArrayStream
     def putc(i)
         @data[@pos] = i
         @pos += 1
+    end
+
+    def length
+        @data.length
     end
 
     def write(stream)

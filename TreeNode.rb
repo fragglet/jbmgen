@@ -18,7 +18,6 @@ class ListData
     def build
         @data = ByteArrayStream.new
         @entries.each do |file_id|
-            puts "file_id: #{file_id}"
             @data.put16(file_id)
         end
     end
