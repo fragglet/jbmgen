@@ -1,5 +1,19 @@
 require "Pointable.rb"
 
+# similarly to the dictionary, a list of paths is stored, allowing them
+# to be reused and the file kept compact as a result. when a file is
+# stored, it contains the index of an entry in the path list, giving
+# the directory the file is stored in.
+
+# paths are stored as an array of directory names, eg.
+# Music/the_smashing_pumpkins/1991_gish 
+#   becomes 
+# [ "Music", "the_smashing_pumpkins", "1991_gish" ]
+#
+# the individual strings are then just entries in the dictionary
+
+# a path
+
 class Path
 
     include Pointable

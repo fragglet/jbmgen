@@ -2,16 +2,56 @@
 
 require "JBMFile.rb"
 
-archos_path = "/media/sdb1"
+def traverse_files(root_path)
+    Dir.foreach(root_path) do |filename|
+        next if filename == '.' || filename == '..'
+        filename = "#{root_path}/#{filename}"
+        if File.directory?(filename)
+            traverse_files(filename) do |filename|
+                yield filename
+            end
+        else
+            yield filename
+        end
+    end
+end
+
+def find_archos
+    mount_output = `mount`
+
+    mount_output.each_line do |s|
+        begin
+            if s =~ /on (\S+)/
+                path = $1
+
+                if path =~ /^\// && File.exists?("#{path}/lib.jbm")
+                    return path
+                end
+            end
+        rescue
+        end
+    end
+
+    nil
+end
+
+archos_path = find_archos
+
+if archos_path == nil
+    raise "Archos GMini not found!"
+else
+    puts "Archos GMini found at #{archos_path}"
+end
 
 file = JBMFile.new
 
-mp3files = Dir.glob(archos_path + '/Music/the_smashing_pumpkins/*/*.mp3')
-
-for mp3 in mp3files
+traverse_files(archos_path) do |mp3|
     base_filename = mp3[archos_path.length+1, mp3.length]
     puts base_filename
-    file.add_file(mp3, base_filename)
+    begin
+        file.add_file(mp3, base_filename)
+    rescue
+    end
 end
 
 file.write_to 'lib.jbm'

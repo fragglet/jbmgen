@@ -4,35 +4,21 @@ require 'FileEntry.rb'
 require 'JBMFile.rb'
 require 'Path.rb'
 require 'TreeNode.rb'
+require 'TreeNodeTypes.rb'
 
 class JBMFile
     def initialize
         @dict = Dictionary.new
         @pathlist = PathList.new(@dict)
         @filelist = FileList.new
-        @root_list = TreeNode.new(@dict, "ROOT", nil)
-        path = get_path("Name")
-        @search_list = path
+        @root_list = RootNode.new(@dict)
+        @search_list = @root_list.name_list
     end
 
-    def get_path(path)
-        dir, filename = nil, nil
-
-        if path =~ /^(.*)\/(.*?)$/
-            dirname, filename = $1, $2
-            dir = get_path(dirname)
-        else
-            dir = @root_list
-            filename = path
-        end
-
-        if dir[filename] == nil 
-            newnode = TreeNode.new(@dict, filename, dir)
-            dir.add(newnode)
-        end
-        
-        dir[filename]
-    end
+    # add in a file, adding to all appropriate lists
+    # filename is the actual location of the file;
+    # relative_filename is the location in the device (relative
+    # to the mountpoint)
 
     def add_file(filename, relative_filename)
         newfile = FileEntry.new(@pathlist, @dict, relative_filename)
@@ -40,10 +26,33 @@ class JBMFile
 
         # set id3 info
         newfile.set_id3info(filename)
+
+        # add to title list
         @search_list.add(newfile)
+
+        # add to album list 
+        album_name = newfile.album
+        album_name = "Unknown" if album_name == ""
+        album_list = @root_list.album_list.get_path(album_name)
+        album_list.add(newfile)
+
+        # add to artist list
+        artist_name = newfile.artist
+        artist_name = "Unknown" if artist_name == ""
+        artist_list = @root_list.artist_list.get_path("#{artist_name}/#{album_name}")
+        artist_list.add(newfile)
         
         newfile
     end
+
+    # we need to give an id to every list in the tree
+    # files are already assigned ids as they are added
+    # ids for lists are assigned starting with the first id
+    # after the end of the files
+    #
+    # ie. if we have n files, the files have the ids
+    #     0..n-1, then n is the id of the first list, n+1
+    #     is the id of the second list, etc.
 
     def assign_ids
         file_id = @filelist.length
@@ -52,6 +61,8 @@ class JBMFile
             file_id += 1
         end
     end
+
+    # count how many lists we have
 
     def num_lists
         i = 0
@@ -103,7 +114,7 @@ class JBMFile
         data.putptr(@pathlist)
         data.putptr(@dict)
         data.put32(data.length)
-        data.put32(@search_list.file_id)     # this should be the search list
+        data.put32(@search_list.file_id)
 
         File.open(filename, 'w') do |file|
             data.write(file)

@@ -1,6 +1,14 @@
 
 require "Pointable.rb"
 
+# .jbm files have a dictionary for strings; this is used for practically
+# everything: filenames, node names, artist and album names, etc.
+# this allows the file to be compact as common strings are reused, and
+# only a dictionary reference is needed instead of the entire string
+
+# an entry in the dictionary. this is just a normal string
+# that knows its position in the file
+
 class DictionaryString < String
 
     attr_reader :pos
@@ -16,6 +24,8 @@ class DictionaryString < String
 
     include Pointable
 end
+
+# dictionary
 
 class Dictionary
 

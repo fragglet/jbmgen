@@ -1,4 +1,7 @@
 
+# something with a position - this can be relative to the file or relative
+# to a section in the file or whatever
+
 module Pointable
     def pos
         if @pos == nil then

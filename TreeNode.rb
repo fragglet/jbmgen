@@ -1,5 +1,10 @@
 require "Pointable.rb"
 
+# lists store the file ids of the data contained inside them
+# all these lists of ids are then put into a single long array.
+# the list has the index of the point in this array where its list
+# data starts.
+
 class ListData
     include Pointable
 
@@ -28,7 +33,18 @@ class ListData
     end
 end
 
+# a list in the browsing tree - contains either more lists
+# or some references to files
+
 class TreeNode
+
+    NODE_ROOT=0
+    NODE_ARTIST=1
+    NODE_ALBUM=2
+    NODE_SONG=3
+    NODE_M3U=4
+    NODE_GENRE=5
+    NODE_YEAR=6
 
     attr_accessor :file_id
     attr_accessor :type
@@ -37,6 +53,7 @@ class TreeNode
     def initialize(dict, name, parent)
         @children = {}
         @type = 0
+        @dict = dict
         @name = dict[name]
         @parent = parent
     end
@@ -50,9 +67,19 @@ class TreeNode
         @children[entry.name] = entry
     end
 
+    # add a new "directory"
+
+    def new_child(name, nodetype=TreeNode)
+        child = nodetype.new(@dict, name, self)
+        add(child)
+        child
+    end
+
+    # perform an action on all sublists
+
     def traverse_tree
         yield self
-        @children.each_value do |node|
+        children.each do |node|
             if node.respond_to? :traverse_tree
                 node.traverse_tree do |subnode|
                     yield subnode
@@ -61,9 +88,36 @@ class TreeNode
         end
     end
 
+    # search down to find a path; recursive
+
+    def get_path(name)
+    
+        dir, path = nil, nil
+
+        if name =~ /^(.*?)\/(.*)$/
+            dir, path = $1, $2
+        else
+            dir, path = name, nil
+        end
+
+        if @children[dir] == nil 
+            new_child(dir)
+        end
+
+        if path == nil
+            @children[dir]
+        else
+            @children[dir].get_path(path)
+        end
+    end
+
     def children
         @children.values.sort { |a, b|
-            a.name <=> b.name
+            if a.respond_to? :title
+                a.title.downcase <=> b.title.downcase
+            else
+                a.name.downcase <=> b.name.downcase
+            end
         }
     end
 
