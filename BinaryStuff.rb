@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# binary mixin with methods to write different sizes of integers
+
 module BinaryStuff
 
     def put8(i)
@@ -50,6 +52,9 @@ end
 class IO
     include BinaryStuff
 end
+
+# this behaves like a stream but just saves what you write to it
+# into an array
 
 class ByteArrayStream
 

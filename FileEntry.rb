@@ -2,18 +2,27 @@
 require 'Pointable.rb'
 require 'mp3info.rb'
 
+# this is a file stored in the database
+
 class FileEntry
 
     include Pointable
 
     attr_accessor :file_id
+    attr_reader :title
+    attr_reader :album
+    attr_reader :artist
+    attr_reader :genre
+    attr_reader :track
 
     def name
         @filename
     end
 
     def initialize(pathlist, dict, filename)
-        filename =~ /^(.*)\/(.*)\.(.*)/
+        if filename !~ /^(.*)\/(.*)\.(.*)/
+            raise "Invalid filename"
+        end
 
         path, filename, extension = $1, $2, $3
 
@@ -41,7 +50,7 @@ class FileEntry
         @album = nil
         @title = @filename
         @track = 0
-        @genre = 0
+        @genre = 255
         @year = 0
 
         # these are always like this:
@@ -52,21 +61,25 @@ class FileEntry
     def tag_info(info, tag)
         info.tag1[tag] || info.tag2[tag]
     end
+
+    # get the id3 data from the file 
     
     def set_id3info(filename)
         begin
             mp3info = Mp3Info.new(filename)
             artist = @dict[tag_info(mp3info, 'artist')]
-            album = @dict[tag_info(mp3info, 'artist')]
+            album = @dict[tag_info(mp3info, 'album')]
             title = @dict[tag_info(mp3info, 'title')]
             track = tag_info(mp3info, 'tracknum')
             year = tag_info(mp3info, 'year')
+            genre = tag_info(mp3info, 'genre')
 
             @artist = artist if artist != nil
             @album = album if album != nil
             @title = title if title != nil
             @track = track if track != nil
             @year = year if year != nil
+            @genre = genre if genre != nil
         rescue
             # rescue from errors while reading id3
         end
@@ -89,6 +102,8 @@ class FileEntry
     end
 end
 
+# the file entries in the .jbm file are stored in a list
+
 class FileList
     include Pointable 
 
@@ -97,6 +112,10 @@ class FileList
     end
 
     def add(file)
+        # assign an id; we take the first available one (at
+        # the end of the list), so the id is really the index
+        # of the file in the list
+
         file.file_id = @files.length
         @files.push(file)
     end
