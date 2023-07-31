@@ -1,0 +1,63 @@
+<html>
+<head>
+<title> jbmgen FAQ</title>
+</head>
+
+<body>
+
+<h1> FAQ </h1>
+  
+<p>
+  <b>Q. Why is this needed? </b> <br>
+  A. The Archos GMini MP3 players have a system called "ARCLibrary" - this 
+     allows you to browse through your MP3s based on various different
+     categories. For example, you can search by artist name, genre, etc.
+     This is similar to functionality which exists on Apple's iPod.
+
+     The catch is that for the ARCLibrary system to work, you must install
+     a program on your computer called "MusicMatch".  This catalogs all the
+     MP3s on your player and generates a file called "lib.jbm" which the
+     player then uses. If you add an MP3 file to your player, it will not
+     reappear in ARCLibrary until you rerun MusicMatch to update the library
+     file.
+
+     MusicMatch is proprietary software which only runs on Microsoft Windows.
+     jbmgen is Free Software (in the Beer and Speech sense) which will run
+     on GNU/Linux and possibly other operating systems.
+
+  
+<p>
+  <b>Q. Can you do x,y?</b> <br>
+  A. The ARCLibrary system basically lets you build a tree of menus which you
+     can browse.  jbmgen contains some extra things that MusicMatch did not,
+     eg. it generates random playlists.  It should be fairly straightforward
+     to add all kinds of extra functionality (ever wanted to browse by 
+     file size or the ID3 "comments" field for example?)
+
+  
+<p>
+  <b>Q. What is this crazy language you have used? </b> <br>
+  A. jbmgen is written in Ruby, a high level scripting language created by
+     Yukihiro "Matz" Matsumoto.  See <a href="http://rubycentral.com/">RubyCentral</a> for more information.
+
+  
+<p>
+  <b>Q. Is this legal? </b> <br>
+  A. Yes. Archos even released the technical specifications of the jbm library
+     format onto Yahoo! groups.  There is a copy of this <a href="/data/">here</a>.
+
+<p>
+  <b>Q. Can I use this under Microsoft Windows? </b> <br>
+  A. Initial versions of the program did function correctly under
+     Microsoft Windows. 
+     However, this should now run under Windows correctly, and code has
+     been added to support this platform.
+     To use this, you need a copy of the ruby interpreter, which can
+     be found <a href="http://rubyforge.org/frs/?group_id=167&release_id=1346">here</a>.
+
+<p>
+<a href="mailto:fraggle@com.gmail(backwards)">Simon Howard</a>
+
+</body>
+</html>
+

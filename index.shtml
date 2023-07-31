@@ -1,0 +1,45 @@
+<html>
+
+<head><title>JBMGen for Archos GMini</title></head>
+
+<body>
+
+<!--#exec cmd="perl randomimg.pl" -->
+
+<h1>JBMGen</h1>
+
+JBMGen is a project to support the <i>ARCLibrary</i> functionality
+on the <a href="http://www.archos.com/products/overview/gmini_120.html">Archos GMini 120</a>
+and the <a href="http://www.archos.com/products/overview/gmini_220.html">Archos GMini 220</a>.
+Currently these require the proprietary <i>MusicMatch</i> software to generate
+the database file needed by the ARCLibrary system. This project aims
+to create a <a href="http://www.gnu.org/philosophy/free-sw.html">Free Software</a>
+alternative so that these MP3 players can be used on Free Operating Systems
+(such as GNU/Linux) without the need for proprietary software.
+
+<p>
+
+jbmgen 1.1.0 <a href="http://sourceforge.net/project/showfiles.php?group_id=124790&package_id=136397&release_id=299847">has been released</a>. This
+supports all of the basic ARCLibrary functionality.
+<p>
+
+<ul>
+<li> <a href="faq.html">FAQ</a>
+<li> <a href="data/">Useful Documents</a>
+<li> <a href="http://cvs.sourceforge.net/viewcvs.py/jbmgen/jbmgen/">CVS</a>
+<li> <a href="http://sourceforge.net/projects/jbmgen/">Project Page</a>
+</ul>
+<p>
+<a href="http://sourceforge.net/">
+<img align="right" src="http://sourceforge.net/sflogo.php?group_id=124790&type=2" border="0">
+</a>
+Hosted by <a href="http://sourceforge.net/">SourceForge</a>.  Jbmgen
+is not associated with ARCHOS and it is not endorsed by them.  Use of
+this is at your own risk.
+<p>
+<a href="mailto:fraggle@com.gmail(backwards)">Simon Howard</a>
+
+</body>
+
+</html>
+
